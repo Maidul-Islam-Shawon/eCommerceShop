@@ -5,6 +5,11 @@
     <UserSecretsId>aspnet-eCommerceShop-1FA72781-FC4B-49DA-99BB-9ACFA0374ED1</UserSecretsId>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="Data\Migrations\20210210234206_AddSpecialTagIntoDatabase.cs" />
+    <Compile Remove="Data\Migrations\20210210234206_AddSpecialTagIntoDatabase.Designer.cs" />
+  </ItemGroup>
+
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="3.0.0" />
