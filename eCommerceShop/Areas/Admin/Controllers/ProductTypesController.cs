@@ -75,6 +75,7 @@ namespace eCommerceShop.Areas.Admin.Controllers
             {
                 _db.ProductTypes.Update(productTypes);
                 await _db.SaveChangesAsync();
+                TempData["Edit"] = "Product Data Updated Successfully";
                 return RedirectToAction(nameof(Index));
             }
             return View(productTypes);
@@ -143,6 +144,7 @@ namespace eCommerceShop.Areas.Admin.Controllers
             {
                 _db.ProductTypes.Remove(productType);
                 await _db.SaveChangesAsync();
+                TempData["Delete"] = "Deleted Successfully";
                 return RedirectToAction(nameof(Index));
             }
             return View(_productTypes);

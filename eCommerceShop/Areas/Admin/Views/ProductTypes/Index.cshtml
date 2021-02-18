@@ -44,11 +44,42 @@
     @if (TempData["Save"] != null)
     {
         <script type="text/javascript">
-        $(function () {
-            var save = '@TempData["Save"]'
-            if (save != null) {
-                alertify.success(save);
+            $(function () {
+                var save = '@TempData["Save"]'
+                if (save != null)
+                {
+                    alertify.success(save);
+                }
+        })
+
+
+
+        </script>
+    }
+
+    @if (TempData["Edit"] != null)
+    {
+        <script type="text/javascript">
+
+            $(function () {
+            var edit = '@TempData["Edit"]'
+            if (edit != null) {
+                alertify.success(edit);
             }
         })
         </script>
     }
+
+    @if (TempData["Delete"] != null)
+    {
+        <script type="text/javascript">
+
+            $(function () {
+            var deleted = '@TempData["Delete"]'
+            if (deleted != null) {
+                alertify.error(deleted);
+            }
+        })
+        </script>
+    }
+}
