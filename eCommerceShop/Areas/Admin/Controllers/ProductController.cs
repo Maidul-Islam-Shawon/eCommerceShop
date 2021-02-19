@@ -32,6 +32,25 @@ namespace eCommerceShop.Areas.Admin.Controllers
             return View(AllProducts);
         }
 
+        [HttpPost]
+        public async Task<IActionResult> Index(decimal minAmount, decimal maxAmount)
+        {
+            if(minAmount==0 || maxAmount == 0)
+            {
+                var products = await _db.Products.Include(m => m.ProductTypes)
+                                                 .Include(m => m.SpecialTags)
+                                                 .ToListAsync();
+                return View(products);
+            }
+
+            var filterdProducts =await _db.Products.Where(m => m.Price >= minAmount && m.Price <= maxAmount)
+                                                .Include(m=>m.ProductTypes)
+                                                .Include(m=>m.SpecialTags)
+                                                .ToListAsync();
+
+            return View(filterdProducts);
+        }
+
 
         [HttpGet]
         public async Task<IActionResult> Create()
@@ -50,6 +69,18 @@ namespace eCommerceShop.Areas.Admin.Controllers
         {
             if (ModelState.IsValid)
             {
+                var searchProduct =await _db.Products.Where(m => m.Name.Equals(products.Name)).
+                                                Include(m => m.ProductTypes)
+                                                .Include(m => m.SpecialTags)
+                                                .FirstOrDefaultAsync();
+
+                if (searchProduct != null)
+                {
+                    ViewBag.message = "This product is already exists.";
+                    GetProductAndTagList();
+                    return View(products);
+                }
+
                 if (image != null)
                 {
                     var imgPath = Path.Combine(_he.WebRootPath + "/Images", Path.GetFileName(image.FileName));
@@ -83,6 +114,11 @@ namespace eCommerceShop.Areas.Admin.Controllers
             ViewData["SpecialTagId"] = new SelectList(specialTagList, "Id", "TagName");
 
             var Product =await _db.Products.FindAsync(id);
+
+            if (Product == null)
+            {
+                return NotFound();
+            }
 
             return View(Product);
         }
@@ -134,7 +170,76 @@ namespace eCommerceShop.Areas.Admin.Controllers
                                       .Include(m => m.SpecialTags)
                                       .FirstOrDefaultAsync();
 
+            if (product == null)
+            {
+                return NotFound();
+            }
+
             return View(product);
+        }
+
+
+        [HttpGet]
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var productTypesList = await _db.ProductTypes.ToListAsync();
+            var specialTagList = await _db.SpecialTags.ToListAsync();
+
+            ViewData["ProductTypesId"] = new SelectList(productTypesList, "Id", "ProductType");
+            ViewData["SpecialTagId"] = new SelectList(specialTagList, "Id", "TagName");
+
+            var product = await _db.Products.Where(m => m.Id.Equals(id))
+                                      .Include(m => m.ProductTypes)
+                                      .Include(m => m.SpecialTags)
+                                      .FirstOrDefaultAsync();
+
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            return View(product);
+        }
+
+        [HttpPost]
+        [ActionName("Delete")]
+        public async Task<IActionResult> DeleteConfirm(int? id, Products products)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            if (id != products.Id)
+            {
+                return NotFound();
+            }
+
+            var product = _db.Products.Find(id);
+
+            if (product==null)
+            {
+                return NotFound();
+            }
+
+            _db.Products.Remove(product);
+            await _db.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+        }
+
+
+        public void GetProductAndTagList()
+        {
+            var productTypesList =  _db.ProductTypes.ToList();
+            var specialTagList =  _db.SpecialTags.ToList();
+
+            ViewData["ProductTypesId"] = new SelectList(productTypesList, "Id", "ProductType");
+            ViewData["SpecialTagId"] = new SelectList(specialTagList, "Id", "TagName");
         }
     }
 }
