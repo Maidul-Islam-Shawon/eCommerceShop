@@ -59,7 +59,7 @@ namespace eCommerceShop.Areas.Admin.Controllers
 
                 if (image == null)
                 {
-                    products.Image = "Images/No-image-found.jpg";
+                    products.Image = "Images/No-image-found.JPG";
                 }
 
                 _db.Products.Add(products);
@@ -67,6 +67,74 @@ namespace eCommerceShop.Areas.Admin.Controllers
                 return RedirectToAction(nameof(Index));
             }
             return View(products);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+            var productTypesList = await _db.ProductTypes.ToListAsync();
+            var specialTagList = await _db.SpecialTags.ToListAsync();
+
+            ViewData["ProductTypesId"] = new SelectList(productTypesList, "Id", "ProductType");
+            ViewData["SpecialTagId"] = new SelectList(specialTagList, "Id", "TagName");
+
+            var Product =await _db.Products.FindAsync(id);
+
+            return View(Product);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(Products products, IFormFile image)
+        {
+            if (ModelState.IsValid)
+            {
+                if (image != null)
+                {
+                    var imgPath = Path.Combine(_he.WebRootPath + "/Images", Path.GetFileName(image.FileName));
+                    await image.CopyToAsync(new FileStream(imgPath, FileMode.Create));
+                    products.Image = "Images/" + image.FileName;
+                }
+
+                if (image == null)
+                {
+                    products.Image = "Images/No-image-found";
+                }
+
+
+                _db.Products.Update(products);
+                await _db.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+
+            return View(products);
+        }
+
+
+        [HttpGet]
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var productTypesList = await _db.ProductTypes.ToListAsync();
+            var specialTagList = await _db.SpecialTags.ToListAsync();
+
+            ViewData["ProductTypesId"] = new SelectList(productTypesList, "Id", "ProductType");
+            ViewData["SpecialTagId"] = new SelectList(specialTagList, "Id", "TagName");
+
+            var product =await _db.Products.Where(m => m.Id.Equals(id))
+                                      .Include(m => m.ProductTypes)
+                                      .Include(m => m.SpecialTags)
+                                      .FirstOrDefaultAsync();
+
+            return View(product);
         }
     }
 }
