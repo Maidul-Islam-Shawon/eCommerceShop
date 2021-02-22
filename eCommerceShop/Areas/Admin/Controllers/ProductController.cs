@@ -33,9 +33,9 @@ namespace eCommerceShop.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Index(decimal minAmount, decimal maxAmount)
+        public async Task<IActionResult> Index(decimal? minAmount, decimal? maxAmount)
         {
-            if(minAmount==0 || maxAmount == 0)
+            if(minAmount==null || maxAmount == null)
             {
                 var products = await _db.Products.Include(m => m.ProductTypes)
                                                  .Include(m => m.SpecialTags)
