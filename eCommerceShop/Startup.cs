@@ -33,6 +33,15 @@ namespace eCommerceShop
             services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
+            services.AddDistributedMemoryCache();
+
+            services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromMinutes(30);
+                //options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+            });
+
             services.AddMvc(option => option.EnableEndpointRouting = false);
 
             services.AddControllersWithViews();
@@ -60,6 +69,8 @@ namespace eCommerceShop
 
             app.UseAuthentication();
             app.UseAuthorization();
+
+            app.UseSession();
 
             //app.UseEndpoints(endpoints =>
             //{
