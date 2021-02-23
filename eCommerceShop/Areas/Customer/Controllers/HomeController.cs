@@ -24,6 +24,7 @@ namespace eCommerceShop.Controllers
             this._db = db;
         }
 
+        [HttpGet]
         public async Task<IActionResult> Index()
         {
             var allProducts = await _db.Products.Include(m => m.ProductTypes)
@@ -97,12 +98,31 @@ namespace eCommerceShop.Controllers
             return View(product);
         }
 
+        [HttpGet]
+        [ActionName("Remove")]
+        public IActionResult RemoveFromCart(int? id)
+        {
+            List<Products> products = HttpContext.Session.Get<List<Products>>("products");
+
+            if (products != null)
+            {
+                var product = products.FirstOrDefault(m => m.Id.Equals(id));
+
+                if (products != null)
+                {
+                    products.Remove(product);
+                    HttpContext.Session.Set("products", products);
+                }
+            }
+
+            //return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Cart));
+        }
+
         [HttpPost]
         public IActionResult Remove(int? id)
         {
-            List<Products> products = new List<Products>();
-
-            products = HttpContext.Session.Get<List<Products>>("products");
+            List<Products> products = HttpContext.Session.Get<List<Products>>("products");
 
             if (products != null)
             {
@@ -116,6 +136,19 @@ namespace eCommerceShop.Controllers
             }
 
             return RedirectToAction(nameof(Index));
+        }
+
+        [HttpGet]
+        public IActionResult Cart()
+        {
+             List<Products> products = HttpContext.Session.Get<List<Products>>("products");
+
+            if (products == null)
+            {
+                products = new List<Products>();
+            }
+
+            return View(products);
         }
     }
 }

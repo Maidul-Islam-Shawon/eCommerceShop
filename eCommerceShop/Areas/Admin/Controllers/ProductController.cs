@@ -43,7 +43,7 @@ namespace eCommerceShop.Areas.Admin.Controllers
                 return View(products);
             }
 
-            var filterdProducts =await _db.Products.Where(m => m.Price >= minAmount && m.Price <= maxAmount)
+            var filterdProducts = await _db.Products.Where(m => m.Price >= minAmount && m.Price <= maxAmount)
                                                 .Include(m=>m.ProductTypes)
                                                 .Include(m=>m.SpecialTags)
                                                 .ToListAsync();
