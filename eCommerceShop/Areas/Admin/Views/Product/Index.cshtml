@@ -11,7 +11,7 @@
     <div class="row">
         <div class="col-3">
             <label>Min Value</label>
-            <input type="number" class="form-control" name="minAmount"/>
+            <input type="number" class="form-control" name="minAmount" />
         </div>
         <div class="col-3">
             <label>Max Value</label>
@@ -84,18 +84,38 @@
 
 @section scripts{
     <script src="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>
-<script type="text/javascript">
-    $(document).ready( function () {
-        $('#productTable').DataTable({
-            dom: 'Bfrtip',
-            buttons: [
-                'copy', 'csv', 'excel', 'pdf', 'print'
-            ]
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#productTable').DataTable({
+                dom: 'Bfrtip',
+                buttons: [
+                    'copy', 'csv', 'excel', 'pdf', 'print'
+                ]
+            });
         });
-    });
-</script>
+    </script>
 
-    @if (TempData["Save"] != null)
+    <script type="text/javascript">
+        $(function () {
+            var save = '@TempData["Save"]'
+            if (save != null)
+            {
+                alertify.success(save);
+            }
+
+            var edit = '@TempData["Edit"]'
+            if (edit != null) {
+                alertify.success(edit);
+            }
+
+            var deleted = '@TempData["Delete"]'
+            if (deleted != null) {
+                alertify.error(deleted);
+            }
+        });
+    </script>
+
+    @*@if (TempData["Save"] != null)
     {
         <script type="text/javascript">
             $(function () {
@@ -135,5 +155,7 @@
             }
         })
         </script>
-    }
+    }*@
+
+    
 }

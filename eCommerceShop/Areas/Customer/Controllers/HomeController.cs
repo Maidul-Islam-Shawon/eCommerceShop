@@ -34,7 +34,7 @@ namespace eCommerceShop.Controllers
                                                 .ToListAsync();
 
             //...for pagination...//
-            var allProductsWithPaged = allProducts.ToPagedList(page ?? 1, 1);
+            var allProductsWithPaged = allProducts.ToPagedList(page ?? 1, 6);
 
             return View(allProductsWithPaged);
         }
