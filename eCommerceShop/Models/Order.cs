@@ -8,6 +8,11 @@ namespace eCommerceShop.Models
 {
     public class Order
     {
+        public Order()
+        {
+            OrderDetails = new List<OrderDetails>();
+        }
+
         public int Id { get; set; }
 
         [Display(Name = "Order No")]

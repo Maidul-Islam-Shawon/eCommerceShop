@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace eCommerceShop.Areas.Customer.Controllers
 {
+    [Area("Customer")]
     public class OrderController : Controller
     {
         private readonly ApplicationDbContext _db;
@@ -35,7 +36,7 @@ namespace eCommerceShop.Areas.Customer.Controllers
                 foreach(var product in products)
                 {
                     OrderDetails orderDetails = new OrderDetails();
-                    orderDetails.Id = product.Id;
+                    orderDetails.ProductId = product.Id;
                     anOrder.OrderDetails.Add(orderDetails);
 
                 }
@@ -44,7 +45,7 @@ namespace eCommerceShop.Areas.Customer.Controllers
             _db.Orders.Add(anOrder);
             await _db.SaveChangesAsync();
 
-            HttpContext.Session.Set("products", null);
+            HttpContext.Session.Set("products", new List<Products>());
 
             return View();
         }

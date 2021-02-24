@@ -1,5 +1,7 @@
 ﻿@using eCommerceShop.Models;
-@model List<Products>;
+@using X.PagedList.Mvc.Core;
+@using X.PagedList.Web.Common;
+@model X.PagedList.IPagedList<Products>
 
 @{
     ViewData["Title"] = "Home Page";
@@ -29,4 +31,8 @@
             </div>
         </div>
     }
+</div>
+
+<div class="row ">
+    @Html.PagedListPager(Model, m => Href("~/Customer/Home/Index?page=" + m), PagedListRenderOptionsBase.OnlyShowFivePagesAtATime)
 </div>

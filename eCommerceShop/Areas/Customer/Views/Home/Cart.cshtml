@@ -43,16 +43,22 @@
     </table>
 </div>
 
+@{ 
+    decimal totalPrice = Model.Sum(m => m.Price);
+    decimal vatAmount = (totalPrice * 5) / 100;
+    decimal subTotal = totalPrice + vatAmount;
+}
+
 
 <div class="row">
     <div class="col-6">
         <a asp-action="Index" asp-controller="Home" class="btn btn-success">Back to Shopping</a>
     </div>
     <div class="col-6 text-right">
-        <h3>Total Amount: @Model.Sum(m => m.Price)</h3>
-        @*<h3>Vat(5%): @{(Model.Sum(m => m.Price) * 5) / 100} </h3>*@
-        <h3>Sub Total: </h3>
+        <h3>Total Amount: @totalPrice</h3>
+        <h3>Vat(5%): @vatAmount </h3>
+        <h3>Sub Total: @subTotal</h3>
 
-        <a asp-action="Index" asp-controller="Home" class="btn btn-info">Checkout</a>
+        <a asp-area="Customer" asp-action="Checkout" asp-controller="Order" class="btn btn-info">Checkout</a>
     </div>
 </div>

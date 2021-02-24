@@ -9,6 +9,8 @@ using eCommerceShop.Models;
 using eCommerceShop.Data;
 using Microsoft.EntityFrameworkCore;
 using eCommerceShop.Utility;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using X.PagedList;
 
 namespace eCommerceShop.Controllers
 {
@@ -25,13 +27,16 @@ namespace eCommerceShop.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? page)
         {
             var allProducts = await _db.Products.Include(m => m.ProductTypes)
                                                 .Include(m => m.SpecialTags)
                                                 .ToListAsync();
 
-            return View(allProducts);
+            //...for pagination...//
+            var allProductsWithPaged = allProducts.ToPagedList(page ?? 1, 1);
+
+            return View(allProductsWithPaged);
         }
 
         public IActionResult Privacy()
@@ -52,6 +57,9 @@ namespace eCommerceShop.Controllers
             {
                 return NotFound();
             }
+
+            var productTypesList = await _db.ProductTypes.ToListAsync();
+            ViewData["ProductTypesId"] = new SelectList(productTypesList, "Id", "ProductType");
 
             var product =await _db.Products.Include(m => m.ProductTypes)
                                       .Include(m => m.SpecialTags)
