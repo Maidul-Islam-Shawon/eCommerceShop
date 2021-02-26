@@ -33,6 +33,9 @@
     }
 </div>
 
-<div class="row ">
-    @Html.PagedListPager(Model, m => Href("~/Customer/Home/Index?page=" + m), PagedListRenderOptionsBase.OnlyShowFivePagesAtATime)
+<div class="row" style="text-align:center">
+    <div class="col-4"></div>
+    <div class="col-4">@Html.PagedListPager(Model, m => Href("~/Customer/Home/Index?page=" + m), PagedListRenderOptionsBase.OnlyShowFivePagesAtATime)</div>
+    <div class="col-4"></div>
+    
 </div>

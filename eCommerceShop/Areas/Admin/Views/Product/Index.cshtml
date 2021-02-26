@@ -98,18 +98,18 @@
     <script type="text/javascript">
         $(function () {
             var save = '@TempData["Save"]'
-            if (save != null)
+            if (save != '')
             {
                 alertify.success(save);
             }
 
             var edit = '@TempData["Edit"]'
-            if (edit != null) {
+            if (edit != '') {
                 alertify.success(edit);
             }
 
             var deleted = '@TempData["Delete"]'
-            if (deleted != null) {
+            if (deleted != '') {
                 alertify.error(deleted);
             }
         });

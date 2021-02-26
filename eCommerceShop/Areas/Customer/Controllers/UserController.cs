@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using eCommerceShop.Data;
 using eCommerceShop.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace eCommerceShop.Areas.Customer.Controllers
 {
@@ -12,15 +14,18 @@ namespace eCommerceShop.Areas.Customer.Controllers
     public class UserController : Controller
     {
         private readonly UserManager<IdentityUser> _userManager;
+        private readonly ApplicationDbContext _db;
 
-        public UserController(UserManager<IdentityUser> userManager)
+        public UserController(UserManager<IdentityUser> userManager, ApplicationDbContext db)
         {
             this._userManager = userManager;
+            this._db = db;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
+            var allUsersList =await _db.ApplicationUsers.ToListAsync();
+            return View(allUsersList);
         }
 
         [HttpGet]
@@ -50,6 +55,53 @@ namespace eCommerceShop.Areas.Customer.Controllers
             }
             
             return View();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Edit(string id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var user = await _db.ApplicationUsers.FirstOrDefaultAsync(m => m.Id.Equals(id));
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            return View(user);
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(ApplicationUser user)
+        {
+            var userInfo = await _db.ApplicationUsers.FirstOrDefaultAsync(m => m.Id.Equals(user.Id));
+
+            if (userInfo == null)
+            {
+                return NotFound();
+            }
+
+            userInfo.FirstName = user.FirstName;
+            userInfo.LastName = user.LastName;
+
+            var userResult = await _userManager.UpdateAsync(userInfo);
+
+            if (userResult.Succeeded)
+            {
+                TempData["Edit"] = "User Updated Successfully";
+                return RedirectToAction(nameof(Index));
+            }
+
+            foreach (var error in userResult.Errors)
+            {
+                ModelState.AddModelError(String.Empty, error.Description);
+            }
+
         }
     }
 }
