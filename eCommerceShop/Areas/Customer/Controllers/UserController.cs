@@ -24,7 +24,7 @@ namespace eCommerceShop.Areas.Customer.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var allUsersList =await _db.ApplicationUsers.ToListAsync();
+            var allUsersList = await _db.ApplicationUsers.ToListAsync();
             return View(allUsersList);
         }
 
@@ -53,7 +53,7 @@ namespace eCommerceShop.Areas.Customer.Controllers
                     ModelState.AddModelError(String.Empty, error.Description);
                 }
             }
-            
+
             return View();
         }
 
@@ -102,6 +102,154 @@ namespace eCommerceShop.Areas.Customer.Controllers
                 ModelState.AddModelError(String.Empty, error.Description);
             }
 
+            return View();
         }
+
+        [HttpGet]
+        public async Task<IActionResult> Details(string id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var user = await _db.ApplicationUsers.FirstOrDefaultAsync(m => m.Id.Equals(id));
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            return View(user);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Lockout(string id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var user = await _db.ApplicationUsers.FirstOrDefaultAsync(m => m.Id.Equals(id));
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            return View(user);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Lockout(ApplicationUser user)
+        {
+            var userInfo = await _db.ApplicationUsers.FirstOrDefaultAsync(m => m.Id.Equals(user.Id));
+
+            if (userInfo == null)
+            {
+                return NotFound();
+            }
+
+            userInfo.LockoutEnd = DateTime.Now.AddYears(100);
+
+            int rowAffected = await _db.SaveChangesAsync();
+
+            if (rowAffected > 0)
+            {
+                TempData["Edit"] = "User Lockout Successfully";
+                return RedirectToAction(nameof(Index));
+            }
+
+            return View(user);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> LockoutEnable(string id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var user = await _db.ApplicationUsers.FirstOrDefaultAsync(m => m.Id.Equals(id));
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            return View(user);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> LockoutEnable(ApplicationUser user)
+        {
+            if (user.Id == null)
+            {
+                return NotFound();
+            }
+
+            var userInfo = await _db.ApplicationUsers.FirstOrDefaultAsync(m => m.Id.Equals(user.Id));
+
+            if (userInfo == null)
+            {
+                return NotFound();
+            }
+
+            userInfo.LockoutEnd = null;
+
+            int rowAffected = await _db.SaveChangesAsync();
+
+            if (rowAffected > 0)
+            {
+                TempData["Active"] = "User Active Successfully";
+                return RedirectToAction(nameof(Index));
+            }
+
+            return View(userInfo);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Delete(string id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var user = await _db.ApplicationUsers.FirstOrDefaultAsync(m => m.Id.Equals(id));
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            return View(user);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Delete(ApplicationUser user)
+        {
+            var userInfo = await _db.ApplicationUsers.FirstOrDefaultAsync(m => m.Id.Equals(user.Id));
+
+            if (userInfo == null)
+            {
+                return NotFound();
+            }
+
+            //await _userManager.DeleteAsync(userInfo);
+            _db.ApplicationUsers.Remove(userInfo);
+            int rowAffected = await _db.SaveChangesAsync();
+
+            if (rowAffected > 0)
+            {
+                TempData["Delete"] = "User Deleted Successfully";
+                return RedirectToAction(nameof(Index));
+            }
+
+            return View(userInfo);
+        }
+
     }
 }
