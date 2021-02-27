@@ -172,6 +172,7 @@ namespace eCommerceShop.Areas.Admin.Controllers
         public async Task<IActionResult> Assign()
         {
             var userList = await _db.ApplicationUsers.Where(m=>m.LockoutEnd<DateTime.Now || m.LockoutEnd==null).ToListAsync();
+            
             var roleList = await _roleManager.Roles.ToListAsync();
 
             ViewData["UserId"] = new SelectList(userList, "Id", "UserName");
@@ -184,31 +185,47 @@ namespace eCommerceShop.Areas.Admin.Controllers
         public async Task<IActionResult> Assign(RoleUserViewModel roleUser)
         {
             var user =await _db.ApplicationUsers.FirstOrDefaultAsync(m => m.Id.Equals(roleUser.UserId));
-            
+
+            var isCheckRoleAssign = await _userManager.IsInRoleAsync(user, roleUser.RoleId);
+
+            if (isCheckRoleAssign)
+            {
+                ViewBag.message = "This User is already assigned with this Role";
+                var userList = await _db.ApplicationUsers.ToListAsync();
+                var roleList = await _roleManager.Roles.ToListAsync();
+
+                ViewData["UserId"] = new SelectList(userList, "Id", "UserName");
+                ViewData["RoleId"] = new SelectList(roleList, "Name", "Name");
+            }
             var role = await _userManager.AddToRoleAsync(user, roleUser.RoleId);
-
-            //var checkRoleUserExist = await _userManager.IsInRoleAsync(user, roleUser.RoleId);
-
-            //if (!checkRoleUserExist)
-            //{
-            //    ViewBag.message = "This User is already assigned with this Role";
-            //    return View();
-            //}
 
             if (role.Succeeded)
             {
                 TempData["Save"] = "User Role Assigned Successfully";
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(AssignUserRole));
             }
 
-            ViewBag.message = "This User is already assigned with this Role";
-            var userList = await _db.ApplicationUsers.ToListAsync();
-            var roleList = await _roleManager.Roles.ToListAsync();
-
-            ViewData["UserId"] = new SelectList(userList, "Id", "UserName");
-            ViewData["RoleId"] = new SelectList(roleList, "Name", "Name");
+            
 
             return View();
+        }
+
+        [HttpGet]
+        public IActionResult AssignUserRole()
+        {
+            var UserRoleList = from ur in _db.UserRoles
+                               join r in _db.Roles on ur.RoleId equals r.Id
+                               join a in _db.ApplicationUsers on ur.UserId equals a.Id
+                               select new UserRoleMapping()
+                               {
+                                   UserId = ur.UserId,
+                                   RoleId = ur.RoleId,
+                                   UserName = a.UserName,
+                                   RoleName = r.Name
+                               };
+
+
+            return View(UserRoleList);
         }
     }
 }

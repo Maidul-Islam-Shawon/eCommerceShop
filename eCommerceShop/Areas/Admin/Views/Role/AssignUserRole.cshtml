@@ -1,0 +1,97 @@
+﻿
+@{
+    ViewData["Title"] = "Index";
+}
+
+<br />
+<br />
+
+<div class="row">
+    <div class="col-6">
+        <h2 class="text-info">Assign User Roles</h2>
+    </div>
+    <div class="col-6 text-right">
+        <a asp-action="Assign" class="btn btn-info"><i class="fas fa-plus"></i>&nbsp; Add New Assign</a>
+    </div>
+</div>
+
+<br />
+
+<table class="table table-striped border">
+    <tr class="table-info">
+        <th>
+            User Name
+        </th>
+        <th>Role Name</th>
+        <th></th>
+    </tr>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.UserName</td>
+            <td>@item.RoleName</td>
+            <td style="width:150px">
+                @*<partial name="_PartialViewForString" model="@item.Id" />*@
+            </td>
+
+        </tr>
+    }
+</table>
+
+@section scripts{
+    <script src="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>
+    @if (TempData["Save"] != null)
+    {
+        <script type="text/javascript">
+            $(function () {
+                var save = '@TempData["Save"]'
+                if (save != null)
+                {
+                    alertify.success(save);
+                }
+        })
+
+
+
+        </script>
+    }
+
+    @if (TempData["Edit"] != null)
+    {
+        <script type="text/javascript">
+
+            $(function () {
+            var edit = '@TempData["Edit"]'
+            if (edit != null) {
+                alertify.success(edit);
+            }
+        })
+        </script>
+    }
+
+    @if (TempData["Delete"] != null)
+    {
+        <script type="text/javascript">
+
+            $(function () {
+            var deleted = '@TempData["Delete"]'
+            if (deleted != null) {
+                alertify.error(deleted);
+            }
+        })
+        </script>
+    }
+
+    @if (TempData["Active"] != null)
+    {
+        <script type="text/javascript">
+
+            $(function () {
+            var deleted = '@TempData["Active"]'
+            if (deleted != null) {
+                alertify.success(deleted);
+            }
+        })
+        </script>
+    }
+}
