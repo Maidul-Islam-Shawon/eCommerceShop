@@ -3,6 +3,8 @@
 @inject IHttpContextAccessor ContextAccessor
 
 @{ 
+    var userRole = ContextAccessor.HttpContext.Session.GetString("roleName");
+
     int count = 0;
 
     List<Products> products = ContextAccessor.HttpContext.Session.Get<List<Products>>("products");
@@ -40,15 +42,19 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
                     <partial name="_LoginPartial" />
                     <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="Admin" asp-controller="ProductTypes" asp-action="Index">Product Type</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="Admin" asp-controller="SpecialTags" asp-action="Index">Tag Name</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="Admin" asp-controller="Product" asp-action="Index">Product</a>
-                        </li>
+                        @if (userRole == "Admin" || userRole == "Super User")
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="Admin" asp-controller="ProductTypes" asp-action="Index">Product Type</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="Admin" asp-controller="SpecialTags" asp-action="Index">Tag Name</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="Admin" asp-controller="Product" asp-action="Index">Product</a>
+                            </li>
+                        }
+
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="Customer" asp-controller="Home" asp-action="Cart">
                                 <i class="fas fa-shopping-cart"></i>

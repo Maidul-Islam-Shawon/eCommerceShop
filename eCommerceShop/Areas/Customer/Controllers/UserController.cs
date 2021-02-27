@@ -44,6 +44,7 @@ namespace eCommerceShop.Areas.Customer.Controllers
 
                 if (result.Succeeded)
                 {
+                    await _userManager.AddToRoleAsync(applicationUser, "User");
                     TempData["Save"] = "User Created Successfully";
                     return RedirectToAction(nameof(Index));
                 }

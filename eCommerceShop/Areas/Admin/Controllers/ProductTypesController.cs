@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace eCommerceShop.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    [Authorize]
+    [Authorize(Roles ="Admin")]
     public class ProductTypesController : Controller
     {
         private readonly ApplicationDbContext _db;
