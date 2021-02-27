@@ -4,11 +4,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using eCommerceShop.Data;
 using eCommerceShop.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace eCommerceShop.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize]
     public class ProductTypesController : Controller
     {
         private readonly ApplicationDbContext _db;
@@ -17,6 +19,9 @@ namespace eCommerceShop.Areas.Admin.Controllers
         {
             this._db = db;
         }
+
+
+        [AllowAnonymous]
         public IActionResult Index()
         {
             var allProductTypes = _db.ProductTypes.ToList();
@@ -26,6 +31,7 @@ namespace eCommerceShop.Areas.Admin.Controllers
 
         //Create Get Action Method
 
+        
         public IActionResult Create()
         {
             return View();
