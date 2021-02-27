@@ -171,7 +171,7 @@ namespace eCommerceShop.Areas.Admin.Controllers
         [HttpGet]
         public async Task<IActionResult> Assign()
         {
-            var userList = await _db.ApplicationUsers.ToListAsync();
+            var userList = await _db.ApplicationUsers.Where(m=>m.LockoutEnd<DateTime.Now || m.LockoutEnd==null).ToListAsync();
             var roleList = await _roleManager.Roles.ToListAsync();
 
             ViewData["UserId"] = new SelectList(userList, "Id", "UserName");
@@ -184,8 +184,7 @@ namespace eCommerceShop.Areas.Admin.Controllers
         public async Task<IActionResult> Assign(RoleUserViewModel roleUser)
         {
             var user =await _db.ApplicationUsers.FirstOrDefaultAsync(m => m.Id.Equals(roleUser.UserId));
-            //var role = _roleManager.FindByIdAsync(roleUser.RoleId);
-
+            
             var role = await _userManager.AddToRoleAsync(user, roleUser.RoleId);
 
             //var checkRoleUserExist = await _userManager.IsInRoleAsync(user, roleUser.RoleId);
