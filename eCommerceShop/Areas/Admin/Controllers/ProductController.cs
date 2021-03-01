@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using eCommerceShop.Services;
 
 namespace eCommerceShop.Areas.Admin.Controllers
 {
@@ -18,11 +19,13 @@ namespace eCommerceShop.Areas.Admin.Controllers
     {
         private readonly ApplicationDbContext _db;
         private readonly IHostingEnvironment _he;
+        
 
         public ProductController(ApplicationDbContext db, IHostingEnvironment he)
         {
             this._db = db;
             this._he = he;
+            
         }
         public async Task<IActionResult> Index()
         {
@@ -43,10 +46,19 @@ namespace eCommerceShop.Areas.Admin.Controllers
                 return View(products);
             }
 
-            var filterdProducts = await _db.Products.Where(m => m.Price >= minAmount && m.Price <= maxAmount)
-                                                .Include(m=>m.ProductTypes)
+            //var filterdProducts = await _db.Products.Where(m => m.Price >= minAmount && m.Price <= maxAmount)
+            //                                    .Include(m=>m.ProductTypes)
+            //                                    .Include(m=>m.SpecialTags)
+            //                                    .ToListAsync();
+
+            var productsList =await _db.Products.Include(m => m.ProductTypes)
                                                 .Include(m=>m.SpecialTags)
                                                 .ToListAsync();
+
+            ProductServices _productServices = new ProductServices();
+
+            var filterdProducts = _productServices.FilterByMinMaxAmount(minAmount, maxAmount, productsList);
+                                                   
 
             return View(filterdProducts);
         }
@@ -54,6 +66,7 @@ namespace eCommerceShop.Areas.Admin.Controllers
 
         [HttpGet]
         public async Task<IActionResult> Create()
+
         {
             var productTypesList = await _db.ProductTypes.ToListAsync();
             var specialTagList = await _db.SpecialTags.ToListAsync();
